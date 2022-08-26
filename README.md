@@ -1,1 +1,1 @@
-Cuckoo Hashing Implementation in C.
+Cuckoo Hashing(without rehashing) Implementation in C.
