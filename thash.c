@@ -38,6 +38,31 @@ double hashFunctionT2(int key)
     return floor ( M * ( key * 0.9 - floor(key * 0.9) ) );
 }
 
+int keySearch(hashTable_T t1[], hashTable_T t2[], int key)
+{
+    int pos;
+
+    /* Testa se está na Tabela I */
+    pos = hashFunctionT1(key);
+
+    if(t1[pos].empty)
+        return 0;
+    if(t1[pos].key == key)
+        return pos;
+    
+    /* Testa se está na Tabela II */
+    
+    pos = hashFunctionT2(key);
+
+    if(t2[pos].key == key)
+        return pos;
+    else
+    {
+        printf("Chave %d não está em nenhuma das tabelas.\n\n", key);
+        return -1;
+    }
+}
+
 int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
 {
     int pos, posT2;
