@@ -38,13 +38,13 @@ double hashFunctionT2(int key)
     return floor ( M * ( key * 0.9 - floor(key * 0.9) ) );
 }
 
-int insertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
+int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
 {
     int pos, posT2;
 
     pos = hashFunctionT1(key);
 
-    if(t1[pos].empty == 1 || t1[pos].removed == 1)
+    if( (t1[pos].empty == 1) || (t1[pos].key == key) || (t1[pos].removed == 1) )
     {
         t1[pos].key   = key;
         t1[pos].empty = false;
@@ -71,6 +71,7 @@ int main()
 {
     hashTable_T t1[M], t2[M];
     int vetor[5] = { 10, 22, 4, 15, 59 };
+    int vetor2[3] = { 15, 22, 59 };
 
     int i, position;
 
@@ -79,7 +80,7 @@ int main()
     printf("\n\n");
     for(i = 0; i < 5; i++)
     {
-        if(insertion(t1, t2, vetor[i], &position) == 1)
+        if(keyInsertion(t1, t2, vetor[i], &position) == 1)
         {
             printf("Valor %d inserido na tabela T1 na posição [%d].\n", vetor[i], position);
         }
@@ -90,6 +91,7 @@ int main()
     printf("\n\n");
     for(i = 0; i < M; i++)
         printf("t1[%d]: %d \t t2[%d]: %d \n", i, t1[i].key, i, t2[i].key);
+    
 
     return 0;
 }
