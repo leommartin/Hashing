@@ -36,9 +36,7 @@ int hashFunctionT1(int key)
 double hashFunctionT2(int key)
 {
     return floor ( M * ( key * 0.9 - floor(key * 0.9) ) );
-}
-
-int keySearch(hashTable_T t1[], hashTable_T t2[], int key)
+}int keySearch(hashTable_T t1[], hashTable_T t2[], int key, int *table)
 {
     int pos;
 
@@ -46,16 +44,25 @@ int keySearch(hashTable_T t1[], hashTable_T t2[], int key)
     pos = hashFunctionT1(key);
 
     if(t1[pos].empty)
+    {
+        *table = 1;
         return 0;
+    }
+
     if(t1[pos].key == key)
+    {
+        *table = 1;
         return pos;
-    
+    }
     /* Testa se está na Tabela II */
     
     pos = hashFunctionT2(key);
 
     if(t2[pos].key == key)
+    {
+        *table = 2;
         return pos;
+    }
     else
     {
         printf("Chave %d não está em nenhuma das tabelas.\n\n", key);
@@ -68,7 +75,7 @@ int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
     int pos, posT2;
 
     pos = hashFunctionT1(key);
-
+    
     if( (t1[pos].empty == 1) || (t1[pos].key == key) || (t1[pos].removed == 1) )
     {
         t1[pos].key   = key;
@@ -84,13 +91,30 @@ int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
         /* Insere chave prévia de T1 em T2 */
         t2[posT2].key = t1[pos].key;
         
-        /* Insere chave nova de T1 sobrescrendo a chave anterior */
+        /* Insere chave nova em T1 sobrescrevendo a chave anterior */
         t1[pos].key = key;
 
         *position = posT2;
         return 2;
     }
 }
+
+int keyDelete(hashTable_T t1[], hashTable_T t2[], int key)
+{
+    int posT1, posT2;
+
+    posT2 = hashFunctionT2(key);
+
+    if(t2[posT2].empty == 0 && key == t2[posT2].key)
+        t2[posT2].empty = 1;
+    else
+    {
+        posT1 = hashFunctionT1(key);
+
+        t1[posT1].removed = 1;
+    }
+}
+
 
 int main()
 {
