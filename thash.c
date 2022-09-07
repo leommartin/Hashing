@@ -52,7 +52,7 @@ int keySearch(hashTable_T t1[], hashTable_T t2[], int key, int *table)
     /* Testa se está na Tabela I */
     pos = hashFunctionT1(key);
 
-    /* Posição de T1 vazia ou com chave removida */
+    /* Posição de T1 vazia ou com chave removida/nao-removida*/
     if(t1[pos].empty || t1[pos].removed)
         return -1;
 
@@ -118,12 +118,15 @@ int keyDelete(hashTable_T t1[], hashTable_T t2[], int key)
     {
         // t2[posT2].removed = true;
         t2[posT2].empty = true;
+        t2[posT2].key = -1;
         return table;
     } 
     /* Senão, testa se a chave está na Tabela I */
     else if( (keySearch(t1, t2, key, &table) >= 0) && (table == 1) )
     {
         t1[posT1].removed = true;
+        t1[posT1].empty = true;
+        t1[posT1].key = -1;
         return table;
     }
     else /* Falha na remoção, chave não encontrada */
@@ -166,7 +169,7 @@ int main()
 
     printf("\n\n");
     for(i = 0; i < M; i++)
-        if( ! t1[i].empty || !t2[i].empty )
+        // if( ! t1[i].empty || !t2[i].empty )
             printf("t1[%d]: %d \t t2[%d]: %d \n", i, t1[i].key, i, t2[i].key);
 
     /* Opções de ordenação pela chave */
