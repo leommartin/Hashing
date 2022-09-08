@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
 
@@ -9,6 +10,7 @@ struct hashTable{
     bool removed;
     bool empty;
     int table;
+    int position;
 };
 typedef struct hashTable hashTable_T;
 
@@ -30,6 +32,9 @@ void initializeTables(hashTable_T t1[], hashTable_T t2[])
 
         t1[i].key = -1;
         t2[i].key = -1;
+
+        t1[i].position = -1;
+        t2[i].position = -1;
     }
 }
 
@@ -88,6 +93,7 @@ int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
     {
         t1[posT1].key   = key;
         t1[posT1].empty = false;
+        t1[posT1].position = posT1;
 
         *position = posT1;
         return 1;
@@ -99,6 +105,7 @@ int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
     /* Insere chave prévia de T1 em T2 */
     t2[posT2].key = t1[posT1].key;
     t2[posT2].empty = false;
+    t2[posT2].position = posT2;
     
     /* Insere nova chave em T1 sobrescrevendo a chave anterior */
     t1[posT1].key = key;
@@ -133,9 +140,20 @@ int keyDelete(hashTable_T t1[], hashTable_T t2[], int key)
         return 0;
 }
 
+/* Retorna a comparação entre duas chaves para ordenação */
+int keyCompare(const void *a, const void *b)
+{
+    if ((*(struct hashTable*)a).key == (*(struct hashTable*)b).key)
+        return  0;
+    else if ((*(struct hashTable*)a).key < (*(struct hashTable*)b).key)
+        return -1;
+    else
+        return  1;       
+}
+
 int main()
 {
-    hashTable_T t1[M], t2[M], tR[M+M];
+    hashTable_T t1[M], t2[M], tr[M+M];
 
     // int vetor[5]  = { 10, 22, 4, 15, 59 };
     // int vetor2[3] = { 15, 22, 59 };
@@ -151,26 +169,60 @@ int main()
     {
         if(op == 'i')
         {
-            if(keyInsertion(t1, t2, key, &position) == 1)
-                printf("Chave %d inserida na tabela T1 na posição [%d].\n", key, position);
-            else
-                printf("Chave %d inserido na tabela T2 na posicao [%d] após colisão com T1.\n", key, position);
+            if(keyInsertion(t1, t2, key, &position) == 1){}
+            
+                // printf("Chave %d inserida na tabela T1 na posição [%d].\n", key, position);
+            // else
+                // printf("Chave %d inserido na tabela T2 na posicao [%d] após colisão com T1.\n", key, position);
         }
         else if(op == 'r')
         {
-            if(table = keyDelete(t1, t2, key))
-                printf("Chave %d deletada da tabela T%d. \n", key, table);
-            else
-                printf("Chave %d não existe em ambas tabelas. \n", key);
+            if(table = keyDelete(t1, t2, key)){}
+            //     printf("Chave %d deletada da tabela T%d. \n", key, table);
+            // else
+            //     printf("Chave %d não existe em ambas tabelas. \n", key);
         }
         else
             printf("\nOperação inválida.\n");
     }
 
-    printf("\n\n");
+    // printf("\n\n");
+    // for(i = 0; i < M; i++)
+    //     if( ! t1[i].empty || !t2[i].empty )
+    //         printf("t1[%d]: %d \t t2[%d]: %d \n", i, t1[i].key, i, t2[i].key);
+    // printf("\n\n");
+
+    int j = M;
     for(i = 0; i < M; i++)
-        // if( ! t1[i].empty || !t2[i].empty )
-            printf("t1[%d]: %d \t t2[%d]: %d \n", i, t1[i].key, i, t2[i].key);
+    {
+        tr[i].key = t1[i].key;
+        tr[i].empty = t1[i].empty;
+        tr[i].removed = t1[i].removed;
+        tr[i].table = t1[i].table;
+        tr[i].position = t1[i].position;
+
+        tr[j+i].key = t2[i].key;
+        tr[j+i].empty = t2[i].empty;
+        tr[j+i].removed = t2[i].removed;
+        tr[j+i].table = t2[i].table;
+        tr[j+i].position = t2[i].position;
+    }
+
+    qsort(tr, M*2, sizeof(hashTable_T), keyCompare);
+
+    printf("\n\n");
+    for(i = 0; i < M*2; i++)
+    {
+        if( (!tr[i].empty) && (tr[i].table == 1) )
+            printf("%d,T1,%d\n",tr[i].key, tr[i].position);
+        else if( (!tr[i].empty) && (tr[i].table == 2) )
+            printf("%d,T2,%d\n",tr[i].key, tr[i].position);
+    }
+
+    // printf("\n\n");
+    // for(i = 0; i < M*2; i++)
+    //     printf("%d %d %d\n", tr[i].key, tr[i].empty, tr[i].table);
+
 
     /* Opções de ordenação pela chave */
     
