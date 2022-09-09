@@ -57,7 +57,7 @@ int keySearch(hashTable_T t1[], hashTable_T t2[], int key, int *table)
     /* Testa se está na Tabela I */
     pos = hashFunctionT1(key);
 
-    /* Posição de T1 vazia ou com chave removida/nao-removida*/
+    /* Posição de T1 vazia ou com chave removida*/
     if(t1[pos].empty || t1[pos].removed)
         return -1;
 
@@ -78,11 +78,10 @@ int keySearch(hashTable_T t1[], hashTable_T t2[], int key, int *table)
         return pos;
     }
     else
-        // printf("Chave %d não está em nenhuma das tabelas.\n\n", key);
         return -2;
 }
 
-int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
+int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key)
 {
     int table, posT1, posT2;
 
@@ -95,7 +94,6 @@ int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
         t1[posT1].empty = false;
         t1[posT1].position = posT1;
 
-        *position = posT1;
         return 1;
     }
 
@@ -110,7 +108,6 @@ int keyInsertion(hashTable_T t1[], hashTable_T t2[], int key, int *position)
     /* Insere nova chave em T1 sobrescrevendo a chave anterior */
     t1[posT1].key = key;
 
-    *position = posT2;
     return 2;
 }
 
@@ -155,107 +152,42 @@ int main()
 {
     hashTable_T t1[M], t2[M], tr[M+M];
 
-    // int vetor[5]  = { 10, 22, 4, 15, 59 };
-    // int vetor2[3] = { 15, 22, 59 };
-
     char op;
-    int i, table, position, key;
+    int i, key;
 
     initializeTables(t1, t2);
 
-    printf("\n\n");
-
+    /* Leitura das operações a partir da entrada padrão */
     while(scanf("%c %d\n", &op, &key) != EOF)
     {
         if(op == 'i')
-        {
-            if(keyInsertion(t1, t2, key, &position) == 1){}
-            
-                // printf("Chave %d inserida na tabela T1 na posição [%d].\n", key, position);
-            // else
-                // printf("Chave %d inserido na tabela T2 na posicao [%d] após colisão com T1.\n", key, position);
-        }
+            keyInsertion(t1, t2, key);
         else if(op == 'r')
-        {
-            if(table = keyDelete(t1, t2, key)){}
-            //     printf("Chave %d deletada da tabela T%d. \n", key, table);
-            // else
-            //     printf("Chave %d não existe em ambas tabelas. \n", key);
-        }
+            keyDelete(t1, t2, key);
         else
             printf("\nOperação inválida.\n");
     }
 
-    // printf("\n\n");
-    // for(i = 0; i < M; i++)
-    //     if( ! t1[i].empty || !t2[i].empty )
-    //         printf("t1[%d]: %d \t t2[%d]: %d \n", i, t1[i].key, i, t2[i].key);
-    // printf("\n\n");
-
+    /* Cópia das informações das Tabelas T1 e T2 para TR */
     int j = M;
     for(i = 0; i < M; i++)
     {
-        tr[i].key = t1[i].key;
-        tr[i].empty = t1[i].empty;
-        tr[i].removed = t1[i].removed;
-        tr[i].table = t1[i].table;
-        tr[i].position = t1[i].position;
-
-        tr[j+i].key = t2[i].key;
-        tr[j+i].empty = t2[i].empty;
-        tr[j+i].removed = t2[i].removed;
-        tr[j+i].table = t2[i].table;
-        tr[j+i].position = t2[i].position;
+        tr[i]= t1[i];
+        tr[j+i]= t2[i];
     }
 
+    /* Ordena TR */
     qsort(tr, M*2, sizeof(hashTable_T), keyCompare);
 
-    printf("\n\n");
+    /* Imprime Ordenado */
     for(i = 0; i < M*2; i++)
     {
         if( (!tr[i].empty) && (tr[i].table == 1) )
             printf("%d,T1,%d\n",tr[i].key, tr[i].position);
-        else if( (!tr[i].empty) && (tr[i].table == 2) )
-            printf("%d,T2,%d\n",tr[i].key, tr[i].position);
+        else 
+            if( (!tr[i].empty) && (tr[i].table == 2) )
+                printf("%d,T2,%d\n",tr[i].key, tr[i].position);
     }
-
-    // printf("\n\n");
-    // for(i = 0; i < M*2; i++)
-    //     printf("%d %d %d\n", tr[i].key, tr[i].empty, tr[i].table);
-
-
-    /* Opções de ordenação pela chave */
-    
-        /* Adicionar var "table" na struct dos elementos da THash? */
-        /* Copiar todas as chaves existentes para um vetor com 2M posições e ordenar */
-
-        /* Ordenar as duas tabelas após as inserções e remoções, comparar valores das duas tabelas ordenadas e imprimir */
     
     return 0;
 }
-
-
-// else if( ! t1[i].empty )
-//     printf("t1[%d]: %d \t", i, t1[i].key);
-// else if( ! t2[i].empty )
-//     printf("t2[%d]: %d \n", i, t2[i].key);
-
-
-/* REMOCAO */
-
-// int posT1, posT2;
-
-// posT2 = hashFunctionT2(key);
-
-// if(t2[posT2].empty == 0 && key == t2[posT2].key)
-// {
-//     t2[posT2].empty = 1;
-// }
-// else
-// {
-//     posT1 = hashFunctionT1(key);
-
-//     t1[posT1].removed = 1;
-// }
-
-// // Analisar e terminar a remoção.
